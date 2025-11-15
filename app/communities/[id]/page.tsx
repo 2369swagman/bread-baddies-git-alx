@@ -1,103 +1,51 @@
-import { redirect, notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+// Removed imports: redirect, notFound, createClient
 import { CommunityHeader } from "@/components/communities/community-header";
 import { CommunityTabs } from "@/components/communities/community-tabs";
 
+// Import our new mock data
+import {
+  mockUser,
+  mockCommunities,
+  mockMembership,
+  mockProposals,
+  mockPosts,
+} from "@/lib/mock-data";
+
 export default async function CommunityPage({ params }: { params: { id: string } }) {
-  const supabase = await createClient();
   const { id } = params;
 
-  // Check authentication
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // --- Removed all Supabase auth and data fetching ---
 
-  if (!user) {
-    redirect(`/login?redirect=/communities/${id}`);
-  }
+  // 1. Get user and membership from mock data
+  const user = mockUser;
+  const membership = mockMembership; // We'll use this for all communities for simplicity
 
-  // Get community data
-  const { data: community, error: communityError } = await supabase
-    .from("communities")
-    .select(`
-      *,
-      community_tags (
-        id,
-        tag_name,
-        approved,
-        source
-      ),
-      leader:profiles!communities_leader_id_fkey (
-        id,
-        full_name,
-        avatar_url
-      )
-    `)
-    .eq("id", id)
-    .single();
+  // 2. Get community data from mock data
+  const community = mockCommunities.find((c) => c.id === id);
 
-  if (communityError || !community) {
-    notFound();
-  }
-
-  // Check if user is a member
-  const { data: membership } = await supabase
-    .from("community_members")
-    .select("role, status")
-    .eq("community_id", id)
-    .eq("user_id", user.id)
-    .single();
-
-  // Check access (public communities OR user is a member)
-  const hasAccess = !community.is_private || membership?.status === "active";
-
-  if (!hasAccess) {
+  if (!community) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <h2 className="text-2xl font-bold">Private Community</h2>
-          <p className="text-muted-foreground">
-            You need to be a member to view this community.
-          </p>
-          {membership?.status === "pending" && (
-            <p className="text-sm text-muted-foreground">
-              Your membership request is pending approval.
-            </p>
-          )}
-        </div>
+      <div className="container mx-auto px-4 py-8">
+        <h2 className="text-2xl font-bold">Community Not Found</h2>
+        <p>This community ID does not exist in the mock data.</p>
       </div>
     );
   }
 
+  // 3. Assume user has access (we removed the private/public check)
   const isLeader = membership?.role === "leader";
   const isMember = membership?.status === "active";
 
-  // Get proposals
-  const { data: proposals } = await supabase
-    .from("proposals")
-    .select(`
-      *,
-      author:profiles!proposals_user_id_fkey (
-        full_name,
-        avatar_url
-      )
-    `)
-    .eq("community_id", id)
-    .eq("status", "active")
-    .order("created_at", { ascending: false });
+  // 4. Get proposals from mock data, filtered by this community's ID
+  const proposals = mockProposals.filter((p) => p.community_id === id);
 
-  // Get posts (crowdfunding projects)
-  const { data: posts } = await supabase
-    .from("posts")
-    .select("*")
-    .eq("community_id", id)
-    .in("status", ["active", "funded"])
-    .order("created_at", { ascending: false });
+  // 5. Get posts from mock data, filtered by this community's ID
+  const posts = mockPosts.filter((p) => p.community_id === id);
 
   return (
     <div className="min-h-screen bg-background">
       <CommunityHeader
-        community={community}
+        community={community as any} // Using 'as any' to bypass strict type matching
         isLeader={isLeader}
         isMember={isMember}
         userId={user.id}
@@ -106,8 +54,8 @@ export default async function CommunityPage({ params }: { params: { id: string }
       <div className="container mx-auto px-4 py-8">
         <CommunityTabs
           communityId={id}
-          proposals={proposals || []}
-          posts={posts || []}
+          proposals={proposals as any} // Using 'as any'
+          posts={posts as any}         // Using 'as any'
           isLeader={isLeader}
           isMember={isMember}
         />

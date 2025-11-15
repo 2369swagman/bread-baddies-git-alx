@@ -1,63 +1,25 @@
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+// Removed imports: redirect, createClient
 import { NavigationMenu, DesktopNavigation } from "@/components/dashboard/navigation-menu";
 import { OnboardingBanner } from "@/components/onboarding/onboarding-banner";
 import { MyCommunities } from "@/components/dashboard/my-communities";
 import { RecommendedCommunities } from "@/components/dashboard/recommended-communities";
 
+// Import our new mock data
+import { mockUser, mockProfile, mockCommunities } from "@/lib/mock-data";
+
 export default async function DashboardPage() {
-  const supabase = await createClient();
+  // --- Removed all Supabase auth and data fetching ---
 
-  // Check authentication
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // 1. Get user and profile from mock data
+  const user = mockUser;
+  const profile = mockProfile;
 
-  if (!user) {
-    redirect("/login?redirect=/dashboard");
-  }
-
-  // Get user profile
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single();
-
-  if (!profile) {
-    redirect("/login");
-  }
-
-  // Check onboarding status
+  // 2. Check onboarding status from mock profile
   const hasCompletedOnboarding = profile.profile_attributes?.onboarding_completed || false;
 
-  // Get user's communities
-  const { data: membershipData } = await supabase
-    .from("community_members")
-    .select(`
-      community_id,
-      communities (
-        id,
-        name,
-        description,
-        avatar_url,
-        is_private,
-        is_verified,
-        member_count,
-        active_projects_count,
-        created_at,
-        community_tags (
-          tag_name,
-          approved
-        )
-      )
-    `)
-    .eq("user_id", user.id)
-    .eq("status", "active");
-
-  const myCommunities = membershipData
-    ?.map((m: any) => m.communities)
-    .filter(Boolean) || [];
+  // 3. Get communities from mock data
+  // We'll just show all mock communities as "My Communities" for this demo
+  const myCommunities = mockCommunities;
 
   const userData = {
     email: profile.email,
@@ -73,7 +35,7 @@ export default async function DashboardPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <NavigationMenu user={userData} />
-              <h1 className="text-2xl font-bold">Bread Baddies</h1>
+              <h1 className="text-2xl font-bold">Bread Baddies (Demo)</h1>
             </div>
             <DesktopNavigation user={userData} />
           </div>
@@ -91,14 +53,14 @@ export default async function DashboardPage() {
             Welcome back{profile.full_name ? `, ${profile.full_name.split(" ")[0]}` : ""}!
           </h2>
           <p className="text-muted-foreground">
-            Here's what's happening in your communities
+            Here's what's happening in your demo communities
           </p>
         </div>
 
         {/* My Communities */}
         <MyCommunities communities={myCommunities} />
 
-        {/* Recommended Communities */}
+        {/* Recommended Communities (Still uses Claude) */}
         <RecommendedCommunities hasCompletedOnboarding={hasCompletedOnboarding} />
       </main>
     </div>
