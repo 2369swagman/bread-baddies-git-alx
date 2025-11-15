@@ -1,0 +1,74 @@
+@import "tailwindcss";
+
+@theme {
+  --font-family-geist-sans: "Geist Sans", sans-serif;
+  --font-family-geist-mono: "Geist Mono", monospace;
+
+  --color-background: oklch(100% 0 0);
+  --color-foreground: oklch(9.84% 0 0);
+  --color-card: oklch(100% 0 0);
+  --color-card-foreground: oklch(9.84% 0 0);
+  --color-popover: oklch(100% 0 0);
+  --color-popover-foreground: oklch(9.84% 0 0);
+  --color-primary: oklch(9.84% 0 0);
+  --color-primary-foreground: oklch(98% 0 0);
+  --color-secondary: oklch(96.1% 0 0);
+  --color-secondary-foreground: oklch(9.84% 0 0);
+  --color-muted: oklch(96.1% 0 0);
+  --color-muted-foreground: oklch(45.4% 0 0);
+  --color-accent: oklch(96.1% 0 0);
+  --color-accent-foreground: oklch(9.84% 0 0);
+  --color-destructive: oklch(50% 0.18 29.23);
+  --color-destructive-foreground: oklch(98% 0 0);
+  --color-border: oklch(89.8% 0 0);
+  --color-input: oklch(89.8% 0 0);
+  --color-ring: oklch(9.84% 0 0);
+  --radius: 0.625rem;
+
+  --color-chart-1: oklch(67.5% 0.14 12.6);
+  --color-chart-2: oklch(72.5% 0.13 166.2);
+  --color-chart-3: oklch(70% 0.1 262.7);
+  --color-chart-4: oklch(68.5% 0.12 52.2);
+  --color-chart-5: oklch(66% 0.11 329.6);
+}
+
+.dark {
+  --color-background: oklch(9.84% 0 0);
+  --color-foreground: oklch(98% 0 0);
+  --color-card: oklch(9.84% 0 0);
+  --color-card-foreground: oklch(98% 0 0);
+  --color-popover: oklch(9.84% 0 0);
+  --color-popover-foreground: oklch(98% 0 0);
+  --color-primary: oklch(98% 0 0);
+  --color-primary-foreground: oklch(9.84% 0 0);
+  --color-secondary: oklch(17.2% 0 0);
+  --color-secondary-foreground: oklch(98% 0 0);
+  --color-muted: oklch(17.2% 0 0);
+  --color-muted-foreground: oklch(64.9% 0 0);
+  --color-accent: oklch(17.2% 0 0);
+  --color-accent-foreground: oklch(98% 0 0);
+  --color-destructive: oklch(35% 0.15 29.23);
+  --color-destructive-foreground: oklch(98% 0 0);
+  --color-border: oklch(17.2% 0 0);
+  --color-input: oklch(17.2% 0 0);
+  --color-ring: oklch(83.1% 0 0);
+
+  --color-chart-1: oklch(60% 0.15 25.3);
+  --color-chart-2: oklch(70% 0.12 166.2);
+  --color-chart-3: oklch(66% 0.11 262.7);
+  --color-chart-4: oklch(65% 0.13 52.2);
+  --color-chart-5: oklch(62% 0.12 329.6);
+}
+
+* {
+  @apply border-border;
+}
+
+body {
+  @apply bg-background text-foreground;
+  font-family: var(--font-family-geist-sans);
+}
+
+code {
+  font-family: var(--font-family-geist-mono);
+}
